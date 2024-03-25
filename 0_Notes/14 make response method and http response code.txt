@@ -1,0 +1,34 @@
+After creating json response, now we need to associate it with http response/status code:
+
+To know different http response code: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+
+just focus on return of methods:
+
+
+
+from flask import make_response # for response code.
+
+class user_model:
+
+    def __init__(self):
+        # connection establishment code:
+        try:
+            self.conn = mysql.connector.connect(host="localhost",user="root"
+                                ,password='adityasinghrajput@2141018021',
+                                database='flask_tutorial')
+            self.conn.autocommit = True # required whenever we insert or update or delete data.
+            self.cur = self.conn.cursor(dictionary=True) # true : because we want data in dic formate.
+
+            print("Connection successfully established!")
+        except Exception as e:
+            print(f"Error: {e}")
+            
+    def user_getall_model(self):
+        self.cur.execute("SELECT * FROM users")
+        result  = self.cur.fetchall()
+        print(result)
+        self.cur.close()
+        if len(result)>0:
+            return make_response({"payload":result},200) # actual json formate with response body.
+        return make_response({"message":"No data found"},204) # 204: for no content found.
+    

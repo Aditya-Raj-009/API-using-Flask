@@ -1,0 +1,62 @@
+To add inserting multiple rows: we need to change the way of sending data
+from postman. Till now we were sending data through 'form-data' in body.
+But by this we can send for adding only one user.
+
+To insert multiple we need to change the body type 'form-data' (in postman) to raw, add
+also select 'JSON'.
+
+then in raw in postman: 
+
+[
+    {
+      "name" : "Abhinav Kumar pandey",
+      "email":"abhinav@gmail.com",
+      "phone":"9876349912",
+      "role_id": 1,
+      "password":"00119922"
+    },
+    {
+      "name" : "Riya Singh",
+      "email":"riya123@gmail.com",
+      "phone":"7983834912",
+      "role_id":1,
+      "password":"riya12098"
+    },
+
+    {
+      "name" : "Mahi Singh",
+      "email":"mahi098@gmail.com",
+      "phone":"9012785433",
+      "role_id":1,
+      "password":"mahi009"
+    }
+]
+
+
+now we create controller for 'multiple insert' and model to insert multiple.
+
+controller:
+
+# for multiple data insertion:
+@app.route('/user/addmultiple',methods=['POST'])
+def user_addMultiple_controller():
+    obj = user_model()
+    # to catch data send by postman(or data from form that suppose to be add in database):
+    # request.form :It is a variable which recieve data as immutable dictionary.
+    
+    return obj.usr_addMultiple_model(request.json)
+
+
+
+model:
+
+# for multiple data insertion:
+
+    def usr_addMultiple_model(self, data):
+        qry = "INSERT INTO users (name,email,phone,role_id,password) VALUES "
+        for user_data in data:
+            qry+=f"('{user_data['name']}','{user_data['email']}','{user_data['phone']}',{user_data['role_id']},'{user_data['password']}'),"
+        
+        qry = qry.removesuffix(',')
+        self.cur.execute(qry)
+        return {'message':f"{len(data)} Users created successfully!"}

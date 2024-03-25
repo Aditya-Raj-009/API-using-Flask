@@ -1,0 +1,83 @@
+Post : It is use to add data to database.
+
+Here we need to create a html form to test.
+But we don't do this. We can test it by post man.
+
+we create our post method here and test our api to post data in postman.
+
+goto->postman->send this url (http://127.0.0.1:5000/user/addone)
+then -> open post tab-> then goto body section
+then -> by default there would be given 'none'
+select-> form data-> add key(column name) and value to be posted.
+
+flow of post:
+
+when you send the data either by form (created from html code) or by postman,
+the data will come to post method declared in your python code in controller file.
+then from here we send it to model then finaly to database.
+
+
+user_model.py:
+
+
+import mysql.connector
+import json
+
+class user_model:
+
+    def __init__(self):
+        # connection establishment code:
+        try:
+            self.conn = mysql.connector.connect(host="localhost",user="root"
+                                ,password='adityasinghrajput@2141018021',
+                                database='flask_tutorial')
+            
+            self.cur = self.conn.cursor(dictionary=True) # true : because we want data in dic formate.
+
+            print("Connection successfully established!")
+        except Exception as e:
+            print(f"Error: {e}")
+            
+    def user_getall_model(self):
+        self.cur.execute("SELECT * FROM users")
+        result  = self.cur.fetchall()
+        print(result)
+        self.cur.close()
+
+        
+        # Query execution.
+        return json.dumps(result) # dumps(): it convert it into string
+    
+
+    def user_addone(self,data):
+        self.conn.autocommit = True # required whenever we insert data.
+        self.cur.execute(f"Insert into users (name,email,phone,role,password) values('{data['name']}','{data['email']}','{data['phone']}','{data['role']}','{data['password']}')")
+        
+        return "User created successfully!"
+
+
+
+
+
+user_controller.py:
+
+
+
+from app import app
+from model.user_model import user_model
+from flask import request
+
+
+@app.route('/user/getall')
+def user_getall_controller():
+    obj = user_model()
+    return obj.user_getall_model()
+
+# we have to explicitly need to give (method=['POST']) because it's by default GET:
+@app.route('/user/addone',methods=['POST'])
+def user_addone_controller():
+    obj = user_model()
+    # to catch data send by postman(or data from form that suppose to be add in database):
+    # request.form :It is a variable which recieve data as immutable dictionary.
+    return obj.user_addone(request.form)
+

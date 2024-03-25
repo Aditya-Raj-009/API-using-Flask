@@ -1,0 +1,39 @@
+We learnt Put for update data in database.
+But disadvantange of Put is that we always need to send whole data even if
+we only want to update only a single unit.
+Let's say you want to update only email.But when you use Put i.e.
+when you send request to update email using put, you need to send whole column including id.
+
+So for this we have another http function which is use to update that is 
+Patch. By this we only send the data that is to be changed and its id.
+
+To know more difference between these 2: https://www.geeksforgeeks.org/difference-between-put-and-patch-request/
+
+
+
+# patch:
+
+@app.route('/user/patch/<id>',methods=['PATCH'])
+def user_patch_controller(id):
+    obj = user_model()
+    return obj.user_patch_model(request.form,id)
+
+
+ # patch:
+    
+    def user_patch_model(self,data,id):
+        # NORMAL UPDATE QUERY: update users set column1 = value1, column2 = value2,.. where id = someid
+
+        # little change when we use patch method:
+        qry = "UPDATE users SET"
+        for key in data:    # we can send any number of update value.
+            qry = f"{qry} {key}='{data[key]}', "
+
+        qry = qry.removesuffix(', ') # remove last ','
+        qry+=f' where id = {id}'
+
+        self.cur.execute(qry)
+
+        if self.cur.rowcount>0:
+            return {'message':'User updated successfully'}
+        return {'message':'Nothing to update'}

@@ -1,0 +1,196 @@
+when client send the request with token, we have to check whether that request's endpoint has
+permission to access role_id present in token.
+
+for this we need endpoint_id present in Accesibility table.
+
+So, to make our work easy, we join Accesibility table and endpoint table:
+
+for this goto database give this query:
+
+ select endpoints_tables.endpoints, accessibility.roles from endpoints_tables join ac
+cessibility where endpoints_tables.id = accessibility.id;
++---------------+-----------+
+| endpoints     | roles     |
++---------------+-----------+
+| /user/getall  | [1]       |
+| /user/addone  | []        |
+| /user/updatel | [1,11,12] |
++---------------+-----------
+
+
+now to create its view, so that we can view this table in just giving the query like select * from..:
+
+for this goto database-> At left drawar where all tables are present , you also 
+find 'view'. right click on 'view' and create view:
+then paste 'select endpoints_tables.endpoints, accessibility.roles from endpoints_tables join ac
+cessibility where endpoints_tables.id = accessibility.id;' create view 'accessibility_view' as PastHere.
+
+now we can see this view by : select * from accessibility_view;
+
+and this view will automatically update whenever we update details in accessibility and endpoints_tables if changed data also present in view.
+
+
+Now we built logic to authenticate the jwt:
+
+So, we create decorator , and put to the top of every endpoint function
+because we to give access to this endpoint only those who access for it.
+
+So for decorator we create another file inside model name 'auth_model.py' then we write code:
+
+Note: to add token -> goto postman-> goto header:
+give key : authorization ,
+value: bearer pasteYourTokenHere.
+
+
+auth_model.py:
+
+import mysql.connector
+import json
+from flask import make_response, request
+import re
+import jwt
+
+class auth_model:
+
+
+    def __init__(self):
+        # connection establishment code:
+        try:
+            self.conn = mysql.connector.connect(host="localhost",user="root"
+                                ,password='adityasinghrajput@2141018021',
+                                database='flask_tutorial')
+            self.conn.autocommit = True # required whenever we insert or update or delete data.
+            self.cur = self.conn.cursor(dictionary=True) # true : because we want data in dic formate.
+
+            print("Connection successfully established!")
+        except Exception as e:
+            print(f"Error: {e}")
+            return
+        
+
+
+    # decorator:
+    
+    def token_auth(self, endpoint):
+
+        def inner1(func):
+            def inner2(*args):
+                # print(request.headers.get("Authorization")) # after executing we see autorization token that we have sent through url (postman).
+                authorization = request.headers.get("Authorization")
+                if re.match("^Bearer *([^ ]+) *$",authorization,flags=0):
+                    token = authorization.split(' ')[1]
+                    print(token)
+                    return func(*args)
+                else:
+                    return make_response({'ERROR':'INVALID_TOKEN' },401)
+            return inner2
+        return inner1
+
+            
+
+from app import app
+from model.user_model import user_model
+from flask import request
+from datetime import datetime
+from model.auth_model import auth_model
+from flask import send_file
+
+auth = auth_model()
+
+
+
+@app.route('/user/getall')
+@auth.token_auth('/user/getall')
+def user_getall_controller():
+    obj = user_model()
+    return obj.user_getall_model()
+
+# we have to explicitly need to give (method=['POST']) because it's by default GET:
+@app.route('/user/addone',methods=['POST'])
+def user_addone_controller():
+    obj = user_model()
+    # to catch data send by postman(or data from form that suppose to be add in database):
+    # request.form :It is a variable which recieve data as immutable dictionary.
+    return obj.user_addone_model(request.form)
+
+
+
+# we have to explicitly need to give (method=['PUT']) because it's by default GET:
+@app.route('/user/update',methods=['PUT'])
+def user_update_controller():
+    obj = user_model()
+    return obj.user_update_model(request.form)
+
+
+@app.route('/user/delete/<id>',methods=['DELETE'])
+def user_delete_controller(id):
+    obj = user_model()
+    return obj.user_delete_model(id)
+
+
+# patch:
+
+@app.route('/user/patch/<id>',methods=['PATCH'])
+def user_patch_controller(id):
+    obj = user_model()
+    return obj.user_patch_model(request.form,id)
+
+#pagination:
+
+@app.route('/user/getall/limit/<limit>/page/<page>',methods=['GET'])
+def user_pagination_controller(limit,page):
+    obj = user_model()
+    return obj.user_pagination_model(limit,page)
+
+
+
+
+# files:
+
+@app.route('/user/<uid>/upload/avatar',methods = ['PUT']) # uid: id
+def user_upload_avatar_controller(uid):
+
+    obj = user_model()
+    # step 1:
+    # for file:
+    file = request.files['avatar']
+
+    # step 2: saving with unique file name:
+
+    # to save file in filesystem: save(path where to save your file)
+    # file.save(file.filename) # for this file path, it will save here only in our current directory.
+    # file.save(f"uploads/{file.filename}")
+    
+    uniqFileName = str(datetime.now().timestamp()).replace('.','')
+
+    fileNameSplit = file.filename.split('.')  # to split extension of file (.jpg,.png, etc)
+
+    ext = fileNameSplit[len(fileNameSplit)-1]
+
+    finalFilePath = f'uploads/{uniqFileName}.{ext}'
+    file.save(finalFilePath)
+
+    return obj.user_upload_avatar_model(uid,filePath=finalFilePath)
+
+
+controller:
+
+
+from app import app
+from model.user_model import user_model
+from flask import request
+from datetime import datetime
+from model.auth_model import auth_model
+from flask import send_file
+
+auth = auth_model()
+
+
+
+@app.route('/user/getall')
+@auth.token_auth('/user/getall')
+def user_getall_controller():
+    obj = user_model()
+    return obj.user_getall_model()
+
+

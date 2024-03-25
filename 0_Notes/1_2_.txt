@@ -1,0 +1,40 @@
+Start:
+
+#1:Creating Virtual environment and first flask app:
+
+1) create environment variable for your project:
+In terminal:
+py -3.12 -m venv env
+.\env\Scripts\activate  
+
+2) install flask:
+In terminal:
+pip install flask
+
+3) create a file "app.py" this file act as an entry point of your app.
+write code:
+
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route('/') # use to provide end point. As soon as the endpoint hit, the following fundtion under the decorater get executed.
+def welcome():  # This function will run as soon as we enter into this endpoint.
+    return "Hello World"
+
+@app.route('/home')
+def home():
+    return 'welcome to my home'
+
+
+4) to auto run on site:
+In terminal:
+ $env:FLASK_APP="development"
+ flask run --debug
+
+
+
+
+#2: To preventing __pycache__files from being created:
+
+(env) PS D:\Python Flask For API> $env:PYTHONDONTWRITEBYTECODE=1

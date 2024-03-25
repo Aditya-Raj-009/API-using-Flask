@@ -1,0 +1,46 @@
+To connect your database with your app:
+
+step 1: install mysql connector:
+In terminal:
+pip install mysql-connector-python.
+
+step2: In user_model.py:
+import mysql
+
+
+step 3:
+user_model.py:
+
+
+import mysql.connector
+
+class user_model:
+
+    def __init__(self):
+        # connection establishment code:
+        try:
+            conn = mysql.connector.connect(host="localhost",user="root"
+                                ,password='adityasinghrajput@2141018021',
+                                database='flask_tutorial')
+            print("Connection successfully established!")
+        except Exception as e:
+            print(f"Error: {e}")
+            
+    def user_getall_model(self):
+        
+        # Query execution.
+        return "This is signup model"
+
+
+
+user_controller.py: just changed the method name.
+
+
+from app import app
+from model.user_model import user_model
+
+
+@app.route('/user/getall')
+def user_getall_controller():
+    obj = user_model()
+    return obj.user_getall_model()

@@ -1,0 +1,27 @@
+creating an endpoint to read the files.
+
+in our database file are save like this:
+
+uploads/1711001459305581.jpg
+
+so, we cannot directly put it into the browser because it has no base url.
+
+So, in this case  frontend developer need to fetch the app like this:
+let he have a domain "myapp.com".
+And my api is link like this: api.myapp.com.
+
+so to fetch data he need to send http request like this:
+api.myapp.com/endpoint. endpoint can be /user, /user/getall/, user/addone/ etc
+
+
+
+user_controller:
+
+from flask import send_file
+
+#  fetch file:
+@app.route("/uploads/<fileName>")
+def user_getAvatar_controller(fileName):
+    return send_file(f"uploads/{fileName}")
+
+ 

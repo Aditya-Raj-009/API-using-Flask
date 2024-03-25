@@ -1,0 +1,52 @@
+How to make a good json:
+just focus on return of every methods:
+
+import mysql.connector
+import json
+
+class user_model:
+
+    def __init__(self):
+        # connection establishment code:
+        try:
+            self.conn = mysql.connector.connect(host="localhost",user="root"
+                                ,password='adityasinghrajput@2141018021',
+                                database='flask_tutorial')
+            self.conn.autocommit = True # required whenever we insert or update or delete data.
+            self.cur = self.conn.cursor(dictionary=True) # true : because we want data in dic formate.
+
+            print("Connection successfully established!")
+        except Exception as e:
+            print(f"Error: {e}")
+            
+    def user_getall_model(self):
+        self.cur.execute("SELECT * FROM users")
+        result  = self.cur.fetchall()
+        print(result)
+        self.cur.close()
+        if len(result)>0:
+            return {"payload":result} # actual json formate
+        return {"message":"No data found"}
+    
+
+    def user_addone_model(self,data):
+        
+        self.cur.execute(f"Insert into users (name,email,phone,role,password) values('{data['name']}','{data['email']}','{data['phone']}','{data['role']}','{data['password']}')")
+        
+        return {'message':"User created successfully!"}
+    
+
+    def user_update_model(self,data):
+        self.cur.execute(f"update users set name='{data['name']}',email='{data['email']}',phone='{data['phone']}',role='{data['role']}',password='{data['password']}' where id={data['id']}")
+        if self.cur.rowcount>0:
+            return {'message':'User updated successfully'}
+        return {'message':'Nothing to update'}
+    
+
+    # Delete:
+
+    def user_delete_model(self, id):
+        self.cur.execute(f"DELETE FROM users WHERE ID={id}")
+        if self.cur.rowcount>0:
+            return {'message':"User Deleted Successfully"}
+        return {'message':"Nothing to delete"}

@@ -1,0 +1,37 @@
+we use here MVC (Model view controller)
+
+start:
+
+1) create a file name "user_controller.py".
+
+this file contains code like we have created in app.py
+Means our app.py is it self act as a controller.
+But we also want if there is another files contains same type of code can also execute.
+
+2):
+user_controller.py:
+
+
+from app import app     #importing app variable from app.py file
+
+@app.route('/user/signup')
+def signup():
+    return 'This is Signup operation'
+
+
+app.py:
+
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route('/') # use to provide end point. As soon as the endpoint hit, the following fundtion under the decorater get executed.
+def welcome():  # This function will run as soon as we enter into this endpoint.
+    return "Hello World"
+
+@app.route('/home')
+def home():
+    return 'welcome to my home'
+
+import user_controller  #importing user_controller so that it reflect on page (site) becoz app.py works as an entry point of app.
+

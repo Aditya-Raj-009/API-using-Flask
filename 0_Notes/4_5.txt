@@ -1,0 +1,25 @@
+1) Create a folder "Controller".
+2) move user_controller.py in this folder.
+
+Now if we create multiple files under this folder
+we need to import all files in app.py.
+for this all we can do is :
+
+from Controller import file1,file2,.. 
+
+Above will work but  this will not work:
+from Controller import *
+
+ To do so we need to define this folder
+as package. We can do this by creating 
+a __init__.py file under this folder and need to 
+write this cod:
+
+__all__ = ['user_controller'] # we need to mention all files name available under this folder inside this array.
+
+
+// now its work.
+
+//But it may be a hectact if there is 100 files. So for this better to do this:
+
+__all__ = [os.path.basename(fname)[:-3] for fname in glob.glob(os.path.dirname(__file__)+"/*.py")]

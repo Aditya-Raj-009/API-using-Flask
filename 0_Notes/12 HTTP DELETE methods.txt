@@ -1,0 +1,23 @@
+Delete:
+
+for delete we only need id of user which we want to delete.
+So for this we don't need to send id by form.
+We send id through url only:
+http://127.0.0.1:5000/user/delete/3     // we send it from postman using delete method
+here at last '3' is id.
+
+Now how we recieve it in our python code:
+
+@app.route('/user/delete/<id>',methods=['DELETE']) # here, <id> is a url variable which we use to recieve id through url.
+def user_delete_controller(id): # take id.
+    obj = user_model()
+    return obj.user_delete_model(id)
+
+
+# Delete: in model class:
+
+    def user_delete_model(self, id):
+        self.cur.execute(f"DELETE FROM users WHERE ID={id}")
+        if self.cur.rowcount>0:
+            return "User Deleted Successfully"
+        return "Nothing to delete"

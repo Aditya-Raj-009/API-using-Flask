@@ -1,0 +1,34 @@
+Now lets go and create tables which we had discussed in last note.
+
+to update in users table to add roles's id as foreign key:
+1) add column 'role_id' make it INT type and then apply and finish to save.
+2) now to make this column (role_id) as foreign key, click below 'foreign key' tab.
+then, give foreign key name, then select referenced table as 'flask_tutorial'.'roles'.
+
+Then at right side, you see users tables's column, you select role_id, then id of roles table.
+
+then in right side you'll see a tab 'foreign key option' from here you select,
+'On update' as cascade.
+cascade: so that if we update role id in role table it automaticaly update in users table.
+Now , click on apply and finish.
+
+whether the cascading is work or not:
+lets add a row in role table:
+let add title as 'super admin'. then apply and finish.
+
+also add id of super admin to the role_id column in users to whom you want to make super admin.
+then click apply and finish.
+
+Now when you update id of super admin it will reflect in users's role_id column.
+
+
+Now lets create Endpoints table:
+id (pk,not null, ai), Endpoints, methods
+then add some Endpoints, from here like '\users\getall and so on.
+
+
+Now lets create Accessibility table:
+
+id(Int,pk,nn,ai), endpoint_id (Int), roles (long text, so that we can add array type or json type long value).
+
+now in same way we make endpoint_id as foreign key.

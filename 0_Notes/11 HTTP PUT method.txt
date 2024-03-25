@@ -1,0 +1,104 @@
+PUT: It is use to updata the data in database.
+
+PUT and POST:
+
+The HTTP PUT method is used to create a new resource or replace a resource. 
+It’s similar to the POST method, in that it sends data to a server, 
+but it’s idempotent. This means that the effect of multiple PUT requests
+should be the same as one PUT request.
+
+For example, you may have a book review app that has an /add-book API 
+route that you could send book data to. The sent book data can then be
+added to a database on the server. Making multiple POST requests to 
+this API will create multiple book entries in the database.
+
+Your book review app may also have an /edit-book/id API route that 
+allows you to edit a book by its ID. API requests to this route would 
+be suited to PUT requests that will replace the book information in the
+database with the data in the request payload. Multiple PUT requests to 
+edit the book data will result in the same data change as one PUT request to 
+edit the data.
+
+
+Here also we use postman to update date.
+Before this we choose put in postman:
+then we send data from postman to pythond put function then from here we send data to database.
+
+
+
+
+user_model.py:
+
+import mysql.connector
+import json
+
+class user_model:
+
+    def __init__(self):
+        # connection establishment code:
+        try:
+            self.conn = mysql.connector.connect(host="localhost",user="root"
+                                ,password='adityasinghrajput@2141018021',
+                                database='flask_tutorial')
+            self.conn.autocommit = True # required whenever we insert or update or delete data.
+            self.cur = self.conn.cursor(dictionary=True) # true : because we want data in dic formate.
+
+            print("Connection successfully established!")
+        except Exception as e:
+            print(f"Error: {e}")
+            
+    def user_getall_model(self):
+        self.cur.execute("SELECT * FROM users")
+        result  = self.cur.fetchall()
+        print(result)
+        self.cur.close()
+
+        
+        # Query execution.
+        return json.dumps(result) # dumps(): it convert it into string
+    
+
+    def user_addone_model(self,data):
+        
+        self.cur.execute(f"Insert into users (name,email,phone,role,password) values('{data['name']}','{data['email']}','{data['phone']}','{data['role']}','{data['password']}')")
+        
+        return "User created successfully!"
+    
+
+    def user_update_model(self,data):
+        self.cur.execute(f"update users set name='{data['name']}',email='{data['email']}',phone='{data['phone']}',role='{data['role']}',password='{data['password']}' where id={data['id']}")
+        if self.cur.rowcount>0:
+            return 'User updated successfully'
+        return 'Nothing to update'
+
+
+
+user_controller.py:
+
+
+
+from app import app
+from model.user_model import user_model
+from flask import request
+
+
+@app.route('/user/getall')
+def user_getall_controller():
+    obj = user_model()
+    return obj.user_getall_model()
+
+# we have to explicitly need to give (method=['POST']) because it's by default GET:
+@app.route('/user/addone',methods=['POST'])
+def user_addone_controller():
+    obj = user_model()
+    # to catch data send by postman(or data from form that suppose to be add in database):
+    # request.form :It is a variable which recieve data as immutable dictionary.
+    return obj.user_addone_model(request.form)
+
+
+
+# we have to explicitly need to give (method=['PUT']) because it's by default GET:
+@app.route('/user/update',methods=['PUT'])
+def user_update_controller():
+    obj = user_model()
+    return obj.user_update_model(request.form)

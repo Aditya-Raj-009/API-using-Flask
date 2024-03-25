@@ -1,0 +1,66 @@
+json.dumps()
+The ‘json.dumps()’ function takes a Python object as input and converts it into a JSON formatted string. Here’s a simple example:
+
+import json
+
+# A simple dictionary
+
+data = {'name': 'John', 'age': 30}
+
+# Convert the dictionary to JSON format
+json_data = json.dumps(data)
+
+print(json_data)
+
+# Output:
+# '{"name": "John", "age": 30}'
+
+
+json.loads()
+On the flip side, the ‘json.loads()’ function is used to convert a JSON formatted string into a Python object. Here’s how it works:
+
+
+import json
+
+# A JSON formatted string
+json_data = '{"name": "John", "age": 30}'
+
+# Convert the JSON string to a Python dictionary
+
+data = json.loads(json_data)
+
+print(data)
+
+# Output:
+# {'name': 'John', 'age': 30}
+
+
+
+json.dumps() vs json.dump()
+While json.dumps() and json.dump() both convert Python objects into JSON, they serve different purposes. json.dumps() returns a JSON string representing a Python object, while json.dump() writes a Python object to a JSON file.
+
+import json
+
+# json.dumps() example
+
+data = {'name': 'John', 'age': 30}
+json_data = json.dumps(data)
+print(json_data)
+
+# Output:
+# '{"name": "John", "age": 30}'
+
+# json.dump() example
+
+with open('data.json', 'w') as f:
+    json.dump(data, f)
+
+# Check the contents of 'data.json' file
+with open('data.json', 'r') as f:
+    print(f.read())
+
+# Output:
+# '{"name": "John", "age": 30}'
+
+
+

@@ -1,0 +1,30 @@
+'Access-Control-Allow-Origin' header: 
+
+let's your api is linked with some domain on server and name is aditya.com.
+And Application (Frontend) is linked with some other domain called myapp.com.
+
+So, when I send a request from my application to api this is called cross origin request.
+
+And this cross origin request are by default blocked by browser.
+To make it allow, In our server set environment (in our case its flask environment), we
+need associate a http response code which is called 'Access-Control-Allow-Origin' header.
+
+and we put it value as '*', it means allow  (means allow request no matter from which origin it's coming.) request
+from wherever its coming.
+
+
+ def user_getall_model(self):
+        self.cur.execute("SELECT * FROM users")
+        result  = self.cur.fetchall()
+        print(result)
+        self.cur.close()
+        if len(result)>0:
+            res = make_response({"payload":result},200)
+            res.headers['Access-Control-Allow-Origin'] = '*'  # adding header
+            return  res
+        return make_response({"message":"No data found"},204) # 204: for no content found.
+    
+
+    now to see, goto postman ,
+    then at bottom you see a 'header' tab click it.
+    Now when you send request, you can see 'Access-Control-Allow-Origin' in header.

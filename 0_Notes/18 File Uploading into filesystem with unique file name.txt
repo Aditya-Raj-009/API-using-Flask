@@ -1,0 +1,70 @@
+what we learn today:
+
+1) Uploading file from postman to server.
+2) Saving file into the filesystem with unique filename.
+3) Updating filepath in database with respective entity.
+4) Creating an endpoint to read the file.
+
+start with (1,2,and 3):
+
+Remember to upload file from postman:
+goto body part : then there will be by default text has been selected in key column.
+You just click on it and select file.
+
+then at value column select 'new file from local machine' and select a photo to upload.
+
+Don't forgot to give id along with endpoints.
+
+
+we create our directory 'upload' here only to save our files there.
+
+Now we need to add another column in our table to add files.
+
+So we add columnn name 'avatar' type wil be varchar and default value will be NULL.
+
+query : alter table users add column avatar VARCHAR(100) NULL;
+
+
+
+ controller:
+
+from datetime import datetime
+
+
+ @app.route('/user/<uid>/upload/avatar',methods = ['PUT']) # uid: id
+def user_upload_avatar_controller(uid):
+
+    obj = user_model()
+    # step 1:
+    # for file:
+    file = request.files['avatar']
+
+    # step 2: saving with unique file name:
+
+    # to save file in filesystem: save(path where to save your file)
+    # file.save(file.filename) # for this file path, it will save here only in our current directory.
+    # file.save(f"uploads/{file.filename}")
+    
+    uniqFileName = str(datetime.now().timestamp()).replace('.','')
+
+    fileNameSplit = file.filename.split('.')  # to split extension of file (.jpg,.png, etc)
+
+    ext = fileNameSplit[len(fileNameSplit)-1]
+
+    finalFilePath = f'uploads/{uniqFileName}.{ext}'
+    file.save(finalFilePath)
+
+    return obj.user_upload_avatar_model(uid,filePath=finalFilePath)
+
+
+
+model:
+
+
+#  files:
+
+    def user_upload_avatar_model(self,uid,filePath):
+        self.cur.execute(f"Update users Set avatar='{filePath}' where id={uid}")
+        if self.cur.rowcount>0:
+            return {'message':'File Uploaded successfully'}
+        return {'message':'Nothing to Upload'}

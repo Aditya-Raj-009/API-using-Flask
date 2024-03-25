@@ -1,0 +1,21 @@
+goto: https://ngrok.com/
+
+after singup: Chose window , then scroll down and click on download.
+Below download link there will be given a authentication token just copy it.
+After download:
+open terminal: goto download, then goto ngrok and paste that you have copied:
+C:\Users\Mithilesh\Downloads\ngrok-v3-stable-windows-amd64>ngrok config add-authtoken 2e1ww6ofBMXAHYbycqnyMnZv3VW_4ShUBVYU5b46XwNovMFDt
+
+start:
+ngrok http [port no on which your api is running]:
+
+C:\Users\Mithilesh\Downloads\ngrok-v3-stable-windows-amd64>ngrok http 5000
+
+then we will be get forwarding url:
+Forwarding                    https://be81-2405-201-a00a-c025-f5f1-e83f-425c-ff11.ngrok-free.app -> http://localhost:5000  
+now this we need to add to application so that it can run on any device.
+
+So we use like this in android studio:
+
+https://be81-2405-201-a00a-c025-f5f1-e83f-425c-ff11.ngrok-free.app/getall
+

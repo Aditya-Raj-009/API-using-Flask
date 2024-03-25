@@ -1,0 +1,88 @@
+in controller:
+
+@app.route('/user/getall')
+@auth.token_auth('/user/getall')    
+def user_getall_controller():
+    obj = user_model()
+    return obj.user_getall_model()
+
+
+# we don't want to give url to token_auth because we want that it automatically
+check the request for endpoint and then it check for acceess in db.
+
+In short, the url (or the endpoint) which we are passing is static and we want dynamic.
+
+So just remove the endpoint wherever you passed in token_auth method.
+then in auth_model.py:
+
+
+    # decorator:
+    
+    def token_auth(self, endpoint=''): # so that argument passing error not come.
+
+        def inner1(func):
+            @wraps(func)
+            def inner2(*args):
+            #add this:
+                endpoint = request.url_rule # so that current reqst jis v endpoint ko aai h wo hume iss url_rule ke jariye mil jayega.
+
+                print(endpoint) # /user/getall. we get when we send request from postman
+
+
+
+know this has been solved.
+
+Know another enhancement we will do is keeping all reusable  data or constant in a single file.
+
+So for this lets create a folder name 'config'
+then inside config create a file 'config.py'
+
+config.py:
+
+db_config = {
+    'host':'localhost',
+    'user':'root',
+    'password': 'adityasinghrajput@2141018021',
+    'database':'flask_tutorial'
+}
+
+In auth_model.py:
+
+
+from Config.config import db_config
+
+class auth_model:
+
+
+    def __init__(self):
+        # connection establishment code:
+        try:
+            self.conn = mysql.connector.connect(**db_config) # changes are here.
+            self.conn.autocommit = True # required whenever we insert or update or delete data.
+            self.cur = self.conn.cursor(dictionary=True) # true : because we want data in dic formate.
+
+            print("Connection successfully established!")
+        except Exception as e:
+            print(f"Error: {e}")
+            return
+
+
+
+similarly in user_model.py:
+
+from Config.config import db_config
+
+class user_model:
+
+    def __init__(self):
+        # connection establishment code:
+        try:
+            self.conn = mysql.connector.connect(**db_config)
+            self.conn.autocommit = True # required whenever we insert or update or delete data.
+            self.cur = self.conn.cursor(dictionary=True) # true : because we want data in dic formate.
+
+            print("Connection successfully established!")
+        except Exception as e:
+            print(f"Error: {e}")
+        
+

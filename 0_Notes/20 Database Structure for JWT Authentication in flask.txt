@@ -1,0 +1,39 @@
+To implement JWT , we need to do some modification on our database because
+in our database till now we have only one table that is 'users'
+
+Users table contains email and password , and we use it as credential for loggin.
+
+Process of make the user loggin called Authentication.
+After the Authentication next step is Authorization.
+Authorization means to check whether this particular user has authority to access
+the resource from the particular server.
+
+So, To what table we are going to add and what changes we'll made in exiting table:
+
+We add another table to our db that is "Roles".
+
+Roles Table: id (primary key), title (we give first default title as 'super admin').
+
+Suppose we are making e-learning app. So, in this we can different roles like:
+instructor,learner,moderator.
+
+Now, we add another table 'Endpoint'.
+It contains: id (primary key) , Endpoint,methods (get,put,etc):
+ /video/upload   Post
+ /course/create  Post
+ /course/getall  Get
+
+Now to give access of Endpoint to the Roles that is which role can access which endpoint.
+for eg: /video/upload this endpoint can only be access by Instructor,
+Similarly, /course/getall can be access by everyone (moderator,instructor and learner)
+
+So to do so we need to make another table 'Accessibility':
+id(primary key), endpoint_id (foreign key) , Roles.
+1                   3                       [1,2,3,4] all four can access because 3rd endpoint is /course/getall.
+2                   1                       [2] only instructor can access.
+
+
+We have: Users table
+we add one more column: role_id (foreign key) and also delete 'role' column from 
+users table because we don't need this.
+

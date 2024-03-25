@@ -1,0 +1,30 @@
+1) Download mySql work bench:
+goto: https://dev.mysql.com/downloads/
+click: mySql gpl downloads
+click: mySql installer for window.
+then click on no thanks. Then all set download.
+
+To on the server:
+in cmd: C:\Program Files\MySQL\MySQL Server 8.0\bin
+
+Then work in MySQL workbench.
+
+
+
+Step1: Now to create a new database:
+MySQL workbench:
+click on an icon top (When you hover it , it show "create a new schema in the connected server")
+
+step 2: give database name. Here I give "flask_tutorial"
+Then click finish -> then finish.
+
+then close tab.
+
+Then at bottom click schema to see all your databases.
+
+step 3: expand your flask_tutorial database , then right click on table
+to create a table "users" with following column:
+id,name,email,phone,role,password.
+
+step 4: go to your created table and hover on it...then click on third option. Then at bottom you find your table,
+just 1 row in this table.

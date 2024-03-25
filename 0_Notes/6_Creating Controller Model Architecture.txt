@@ -1,0 +1,26 @@
+1) Create a folder "model"
+2) create a user_model.py file inside this folder.
+3) Now write code:
+class user_model:
+    def user_signup_model(self):
+        return "This is signup operation"
+
+
+user_controller.py:
+
+
+from app import app
+from model.user_model import user_model
+
+obj = user_model()
+
+@app.route('/user/signup')
+def user_signup_controller():
+    return obj.user_signup_model()
+
+
+
+uderstand MVC (Model view Controller):
+As soon as user_signup_controller method execute, it will call 
+user_signup_model method , which return a string. This will use as data to show on page
+or use on view.

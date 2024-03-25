@@ -1,0 +1,68 @@
+steps we follow:
+
+step 1: create a endpoint for loging and send username and password to this end point.
+step 2: if sended username and password matches to users tables's username and password, there will create a JWT with a secret.
+step 3: Then this JWT will be sent to browser (in our case postman or we can take any end device) and we store to the postman.
+step 4: now with every request sent by postman will also carry jwt along with it.
+step 5: this jwt will decrypt at server side check for authorization if client has authority to access.
+
+
+
+Now we start with step 1:
+
+for this we need to install PyJWT in our environment.
+By this we can encrypt a json to jwt.
+so in terminal: pip install PyJWT.
+
+Now after installing PyJWT, we create a endpoint in controller:
+
+# JWT:
+
+@app.route('/user/login',methods = ['POST'])
+def user_login_controller():
+    obj = user_model()
+    return obj.user_login_model(request.form)
+
+
+
+from datetime import datetime,timedelta
+import jwt
+
+  # JWT:
+    
+    def user_login_model(self,data):
+        # we will not select password because JWT can be decrypted by anyone so anyone would able to password:
+        self.cur.execute(f"select id, name, email, phone, avatar, role_id from users where email='{data['email']}' and password = '{data['password']}'")
+        result = self.cur.fetchall()
+        user_data = result[0]   # this will be our payload in jwt.
+        # also we need add expiration time for token:
+        exp_time = datetime.now() + timedelta(minutes=15)   # to set expiration time for 15 min.
+        exp_epoch_time = int(exp_time.timestamp())  # expiration time
+
+        # if you visit jwt.io you can see there all encryption algo, you can use any one of them for encryption:
+        # now import jwt module.
+        payload = {
+            "payload": user_data,
+            "exp": exp_epoch_time
+        }
+        jwt_token = jwt.encode(payload,key="65dity97",algorithm="HS256")
+        return make_response({"token": jwt_token},200) 
+    # now after run sending request from postman: you will find jwt token:
+
+    {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+    eyJwYXlsb2FkIjp7ImlkIjozLCJuYW1lIjoiUmFodWwgU0luZ2giL
+    CJlbWFpbCI6InJhaHVsMTMyQGdtYWlsLmNvbSIsInBob25lIjoiOTA
+    4NzY1MzI2MjMiLCJhdmF0YXIiOm51bGwsInJvbGVfaWQiOm51bGx9LCJl
+    eHAiOjE3MTEyODg4Mjd9.sgIoH8wqRVUuqCIjy5bHTF86hc9x6O5sBBlViaw_oQc"
+}
+
+
+
+    # if you copy paste this token to jwt.io : you will see your payload and expiration . And it can be done by any that's we don't include passwords to create jwt token.
+    #  But this recreate if one don't know the key.
+    #  we keep this secreat key ('65dity97') at here (server side) because if we send it to
+    #  browser then anyone can recreate it by finding this secret key there by inspect.
+
+
+

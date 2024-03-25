@@ -1,0 +1,66 @@
+Suppose there is multiple data set in your database
+so when you click on 1st button, it show first data as page,
+then on clicking 2nd you get another 2nd set of data, and so on:
+<1,2,3,4,..> pages
+
+For pagination, your rest api must pagination enabled rest api.
+
+So till now we were getting all data (as we have used select * from users).
+But there is a problem. Suppose , there are more lakh of data present in the table.
+So if we try to get all of this data , it takes lot of time. Which effect the user interface at frontend side badly.
+
+So we use Paging to get required amount of data at a time.
+
+so instead of 'select * from users', we use :
+Select * from user Limit yourLimit.
+
+let yourLimit = 10, then  it will return the data from row 1 to row 10 only.
+
+or you can also set the start row to send data:
+
+Select * from user Limit start, yourLimit.
+
+so, here if start = 5 and yourLimit = 10, then we get 10 row starting from row 5th.
+
+so, our api's endpoint looks like: /user/getall/yourLimit/10/page/3.
+: yourLimit/10 : means Limit of each page.
+: page/3 : means no of pages you want.
+
+so above api's endpoint means: we want data from row 26 to 35 because it's given
+page/3.
+
+If it would have page/2 then we get data from row 16 to 25.
+
+So, start = (page*yourLimit) - yourLimit.
+          =  3*10 - 10
+          = 20
+
+
+
+#pagination:
+
+@app.route('/user/getall/limit/<limit>/page/<page>',methods=['GET'])
+def user_pagination_controller(limit,page):
+    obj = user_model()
+    return obj.user_pagination_model(limit,page)
+
+
+
+
+# pagination:
+    def user_pagination_model(self,limit,page):
+        limit = int(limit)
+        page = int(page)
+        start = (page*limit)-limit
+        qry = f'SELECT * FROM users LIMIT {start},{limit}'
+
+        # rest will remain same:
+        self.cur.execute(qry)
+        result  = self.cur.fetchall()
+        self.cur.close()
+        if len(result)>0:
+            res = make_response({"payload":result,"Current Page no":page,"limit":limit},200)
+            res.headers['Access-Control-Allow-Origin'] = '*'  # adding header
+            return  res
+        return make_response({"message":"No data found"},204) # 204: for no content found.
+    
