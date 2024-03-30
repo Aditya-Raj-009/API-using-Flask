@@ -29,7 +29,7 @@ def home():
 
 4) to auto run on site:
 In terminal:
- $env:FLASK_APP="development"
+ $env:FLASK_ENV="development" 
  flask run --debug
 
 
